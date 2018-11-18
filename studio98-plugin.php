@@ -33,6 +33,15 @@ if ( ! class_exists( 'Studio98_GrandCentral_Plugin' ) ) {
 
             define( 'GrandCentral_BACKUP_DIR', WP_CONTENT_DIR.'/studio98wp/backups');
             define( 'GrandCentral_DB_DIR', GrandCentral_BACKUP_DIR.'/swp_db');
+
+            $slug = plugin_basename( __FILE__ );
+            $update_checker = plugin_dir_path(__FILE__);
+            require $update_checker.'plugin-update-checker/plugin-update-checker.php';
+            $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+                'https://github.com/webninjabilal/studio98-plugin',
+                __FILE__, //Full path to the main plugin file or functions.php.
+                $slug
+            );
 			
 			
 			require_once( GrandCentral_FILE_PATH . '/functions.php' );
