@@ -2,7 +2,7 @@
 /*
 Plugin Name: Studio98 Plugin
 Description: Studio98 Plugin for backup, moniter, post exporter
-Version:     0.1.2
+Version:     0.1.3
 Author:      Studio98.com
 Author URI:  https://www.studio98.com
 */
@@ -38,7 +38,7 @@ if ( ! class_exists( 'Studio98_GrandCentral_Plugin' ) ) {
             $update_checker = plugin_dir_path(__FILE__);
             require $update_checker.'plugin-update-checker/plugin-update-checker.php';
             $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
-                'https://github.com/webninjabilal/studio98-plugin',
+                'https://github.com/webninjabilal/studio98-exporter-plugin',
                 __FILE__, //Full path to the main plugin file or functions.php.
                 $slug
             );
