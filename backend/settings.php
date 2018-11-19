@@ -206,15 +206,24 @@ function studio98_settings_menu_function()
     <script>
         function exportPosts()
         {
-            jQuery('#export_posts').val('Exporting .... ');
-            jQuery('#export_posts').attr('disabled','disabled');
             var post_type = jQuery('select[name=post_type]').val();
             var site_post_type = jQuery('select[name=site_post_type]').val();
             var remove_post_meta = 0;
             if(jQuery('[name=remove_post_meta]').is(':checked')) {
                 remove_post_meta = 1;
+                if(confirm('This will delete ALL metadata for this section. Do you want to proceed?')) {
+                    sendPostAjax(post_type, site_post_type, remove_post_meta);
+                }
+            } else {
+                //url: '<?php echo wp_nonce_url( admin_url('admin-ajax.php'), 'grandcentral_export_posts' );?>&do=export&action=grandcentral_export_posts',
+                sendPostAjax(post_type, site_post_type, remove_post_meta);
             }
-            //url: '<?php echo wp_nonce_url( admin_url('admin-ajax.php'), 'grandcentral_export_posts' );?>&do=export&action=grandcentral_export_posts',
+        }
+        function sendPostAjax(post_type, site_post_type, remove_post_meta) {
+
+            jQuery('#export_posts').val('Exporting .... ');
+            jQuery('#export_posts').attr('disabled','disabled');
+
             jQuery.ajax({
                 type: 'POST',
                 url: '<?php echo wp_nonce_url( admin_url('admin-ajax.php'), 'grandcentral_export_post_ids' );?>&do=export&action=grandcentral_export_post_ids',
