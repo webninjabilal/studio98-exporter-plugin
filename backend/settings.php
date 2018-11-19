@@ -11,11 +11,11 @@ function register_studio98_dashboard_widget() {
 
 }
 
-function studio98_dashboard_widget_display() 
+function studio98_dashboard_widget_display()
 {
     $contact_info = get_option( '_grandcentral_contact_info' );
     if(empty($contact_info)) {
-        
+
         $ID           = get_option( '_grandcentral_ID' );
         $website      = get_option( '_grandcentral_website' );
 
@@ -32,7 +32,7 @@ function studio98_dashboard_widget_display()
     } else {
         $contact_info = unserialize($contact_info);
     }
-    
+
     echo '<img src="'.$contact_info['logo'].'"><br><br>
         <b>Support Email</b>: <a href="mailto:'.$contact_info['email'].'">'.$contact_info['email'].'</a><br>
         <b>Website Support</b>: '.$contact_info['phone'].'<br><br>
@@ -45,38 +45,38 @@ function studio98_dashboard_widget_display()
 }
 
 function grandcentral_settings_menu() {
-   add_menu_page('Studio98 Settings', 'Studio98', 'add_users','studio98_settings_menu', 'studio98_settings_menu_function','', 83);
-   
+    add_menu_page('Studio98 Settings', 'Studio98', 'add_users','studio98_settings_menu', 'studio98_settings_menu_function','', 83);
+
     $ID           = get_option( '_grandcentral_ID' );
     $website      = get_option( '_grandcentral_website' );
 }
 
-function studio98_settings_menu_function() 
+function studio98_settings_menu_function()
 {
-  if(isset($_POST) && wp_verify_nonce($_POST['_wpnonce'],'grandcentralFormAuthSettings')) {
+    if(isset($_POST['_wpnonce']) && wp_verify_nonce($_POST['_wpnonce'],'grandcentralFormAuthSettings')) {
 
         $url = sanitize_text_field($_POST['website_text']);
         if(!empty($url)) {
-            $url = 'https://'.parse_url($url, PHP_URL_HOST);      
+            $url = 'https://'.parse_url($url, PHP_URL_HOST);
 
             $validate = validateApiKey($_POST['ID_text'],$url,'yes');
             if($validate and isset($validate->public_key)) {
-                update_option( '_grandcentral_ID', sanitize_text_field($_POST['ID_text']) );        
-                update_option( '_grandcentral_website', sanitize_text_field($url));  
-                update_option( '_grandcentral_public_key', $validate->public_key);  
+                update_option( '_grandcentral_ID', sanitize_text_field($_POST['ID_text']) );
+                update_option( '_grandcentral_website', sanitize_text_field($url));
+                update_option( '_grandcentral_public_key', $validate->public_key);
             } else {
                 echo '<div class="updated" id="message"><p>WebMoniter: Sorry, we found an error. Please confirm your Organization Key and Access Token are correct and try again.</p></div>';
             }
         }
-        
+
         $url = sanitize_text_field($_POST['website_export_text']);
         if(!empty($url)) {
-            $url = 'https://'.parse_url($url, PHP_URL_HOST);      
+            $url = 'https://'.parse_url($url, PHP_URL_HOST);
 
             $validate = validateApiKey($_POST['ID_export_text'],$url);
             if($validate and isset($validate->public_key)) {
-                update_option( '_grandcentral_export_ID', sanitize_text_field($_POST['ID_export_text']) );        
-                update_option( '_grandcentral_export_website', sanitize_text_field($url));  
+                update_option( '_grandcentral_export_ID', sanitize_text_field($_POST['ID_export_text']) );
+                update_option( '_grandcentral_export_website', sanitize_text_field($url));
                 update_option( '_grandcentral_export_website', sanitize_text_field($url));
                 update_option( '_grandcentral_export_public_key', $validate->public_key);
             } else {
@@ -84,21 +84,21 @@ function studio98_settings_menu_function()
             }
         }
     }
-   $out = '<div class="wrap">
+    $out = '<div class="wrap">
             <div style="width:100px;padding-top:5px;" id="icon-grandcentral"><img src="'.GrandCentral_LOGO.'"></div><h2>Settings</h2>';
-   
-   $out .='<p>Authentication is required to use your Studio98 WordPress plugin.</p>';
-   
-   $out .='<p>To get your Private Key, please visit your dashboard. Your private authentication credential will be available there. Copy and paste them into the settings below!</p>';
-            
-   $out .='<form action="" method="post" name="grandcentral_settings">'.wp_nonce_field( 'grandcentralFormAuthSettings', '_wpnonce' );
-   
-   $ID               = get_option( '_grandcentral_ID' );
-   $website          = get_option( '_grandcentral_website' );
-   
-   $out .= '<h2>Setting For Web Moniter</h2>';
-   
-   $out .='<table class="form-table">
+
+    $out .='<p>Authentication is required to use your Studio98 WordPress plugin.</p>';
+
+    $out .='<p>To get your Private Key, please visit your dashboard. Your private authentication credential will be available there. Copy and paste them into the settings below!</p>';
+
+    $out .='<form action="" method="post" name="grandcentral_settings">'.wp_nonce_field( 'grandcentralFormAuthSettings', '_wpnonce' );
+
+    $ID               = get_option( '_grandcentral_ID' );
+    $website          = get_option( '_grandcentral_website' );
+
+    $out .= '<h2>Setting For Web Moniter</h2>';
+
+    $out .='<table class="form-table">
       <tbody>
         <tr valign="top">
           <th scope="row"><label for="ID_text">Private Key</label></th>
@@ -113,12 +113,12 @@ function studio98_settings_menu_function()
     <p class="submit">
       <input type="submit" value="Save Changes" class="button-primary" id="submit" name="submit">
     </p>';
-   $out .= '<h2>Setting For Export</h2>';
-   
-   
-   $ID               = get_option( '_grandcentral_export_ID' );
-   $website          = get_option( '_grandcentral_export_website' );
-   $out .='<table class="form-table">
+    $out .= '<h2>Setting For Export</h2>';
+
+
+    $ID               = get_option( '_grandcentral_export_ID' );
+    $website          = get_option( '_grandcentral_export_website' );
+    $out .='<table class="form-table">
       <tbody>
         <tr valign="top">
           <th scope="row"><label for="ID_export_text">Private Key</label></th>
@@ -133,19 +133,19 @@ function studio98_settings_menu_function()
     <p class="submit">
       <input type="submit" value="Save Changes" class="button-primary" id="submit" name="submit">
     </p>';
-   
-   
-   $out .='</form>';   
-   
-    
-    if(!empty($ID) and !empty($website)) 
-    {
-        
-       $post_types = validateApiKey($ID,$website);
-       $post_types = (isset($post_types->types)) ? $post_types->types : [];
-       $exported = grandcentral_total_exported();
 
-       $out .='<h2>Export</h2>';
+
+    $out .='</form>';
+
+
+    if(!empty($ID) and !empty($website))
+    {
+
+        $post_types = validateApiKey($ID,$website);
+        $post_types = (isset($post_types->types)) ? $post_types->types : [];
+        $exported = grandcentral_total_exported();
+
+        $out .='<h2>Export</h2>';
 
 
         $args = array(
@@ -169,15 +169,15 @@ function studio98_settings_menu_function()
         }
 
         $out .='You have total '.$total_publish_posts.' posts. which are ready to export. Total Exported : '.$exported;
-       $out .= '<br><label for="website_text">Custom Post Type</label><br>';
-       $out .= '<select class="regular-text" name="post_type">';
+        $out .= '<br><label for="website_text">Custom Post Type</label><br>';
+        $out .= '<select class="regular-text" name="post_type">';
 
-       if(count($post_types) > 0) {
-           foreach ($post_types as $type) {
+        if(count($post_types) > 0) {
+            foreach ($post_types as $type) {
                 $out .= '<option value="'.$type->slug.'">'.$type->title.'</option>';
-           }
-       }
-       $out .= '</select>';
+            }
+        }
+        $out .= '</select>';
 
 
 
@@ -186,61 +186,66 @@ function studio98_settings_menu_function()
 
 
         foreach ( $wpPostTypes as $post_type ) {
-             $out .= '<option value="'.$post_type.'">'.ucfirst($post_type).'</option>';
+            $out .= '<option value="'.$post_type.'">'.ucfirst($post_type).'</option>';
         }
 
-       $out .= '</select>';
-       
-       
-       
-            $out .='<p class="submit">
+        $out .= '</select>';
+
+        $out .= '<br><label><strong>Remove meta data after export posts? </strong>';
+        $out .= '<input type="checkbox" name="remove_post_meta" value="1" /></label><br>';
+
+        $out .='<p class="submit">
                 <input onclick="exportPosts();" id="export_posts" type="button" value="Export Posts" class="button-primary" name="export">
               </p>';
-       
+
     }
-   
-   $out .='</div>';// end of wrap div
-   echo $out;
-   ?>
+
+    $out .='</div>';// end of wrap div
+    echo $out;
+    ?>
     <script>
-       function exportPosts() 
-       {
-           jQuery('#export_posts').val('Exporting .... ');
-           jQuery('#export_posts').attr('disabled','disabled');
-           var post_type = jQuery('select[name=post_type]').val();
-           var site_post_type = jQuery('select[name=site_post_type]').val();
-           //url: '<?php echo wp_nonce_url( admin_url('admin-ajax.php'), 'grandcentral_export_posts' );?>&do=export&action=grandcentral_export_posts',
-           jQuery.ajax({
+        function exportPosts()
+        {
+            jQuery('#export_posts').val('Exporting .... ');
+            jQuery('#export_posts').attr('disabled','disabled');
+            var post_type = jQuery('select[name=post_type]').val();
+            var site_post_type = jQuery('select[name=site_post_type]').val();
+            var remove_post_meta = 0;
+            if(jQuery('[name=remove_post_meta]').is(':checked')) {
+                remove_post_meta = 1;
+            }
+            //url: '<?php echo wp_nonce_url( admin_url('admin-ajax.php'), 'grandcentral_export_posts' );?>&do=export&action=grandcentral_export_posts',
+            jQuery.ajax({
                 type: 'POST',
                 url: '<?php echo wp_nonce_url( admin_url('admin-ajax.php'), 'grandcentral_export_post_ids' );?>&do=export&action=grandcentral_export_post_ids',
-                data: 'post_type='+post_type+'&site_post_type='+site_post_type,
+                data: 'post_type='+post_type+'&site_post_type='+site_post_type+'&remove_post_meta='+remove_post_meta,
                 success: function(data) {
                     location.reload();
                 }
             });
-       }
-       </script>
+        }
+    </script>
     <?php
 }
 
 function validateApiKey($ID,$url,$hosting = 'no')
-{    
+{
     $response = wp_remote_post( $url.'/api/wordpress/verify', array(
-	'method' => 'POST',
-	'timeout' => 60,
-	'redirection' => 5,
-	'httpversion' => '1.0',
-	'blocking' => true,
-	'headers' => array(),
-	'body' => ['key' => $ID,'wordpress' => home_url(),'hosting' => $hosting],
-	'cookies' => array()
+            'method' => 'POST',
+            'timeout' => 60,
+            'redirection' => 5,
+            'httpversion' => '1.0',
+            'blocking' => true,
+            'headers' => array(),
+            'body' => ['key' => $ID,'wordpress' => home_url(),'hosting' => $hosting],
+            'cookies' => array()
         )
     );
     if ( is_wp_error( $response ) ) {
-       //$error_message = $response->get_error_message();
-       return false;
+        //$error_message = $response->get_error_message();
+        return false;
     } else if (isset($response['body']) and $response['body'] != 'no') {
-       return json_decode($response['body']);
+        return json_decode($response['body']);
     }
 }
 
@@ -251,7 +256,9 @@ function grandcentralExportPostIds() {
 
     $post_type              = (isset($_POST['post_type']) and $_POST['post_type'] !='') ? sanitize_text_field($_POST['post_type']) : '';
     $site_post_type         = (isset($_POST['site_post_type']) and $_POST['site_post_type'] !='') ? sanitize_text_field($_POST['site_post_type']) : 'post';
+    $remove_post_meta       = (isset($_POST['remove_post_meta'])) ? sanitize_text_field($_POST['remove_post_meta']) : 0;
     $permalink_structure    = get_option('permalink_structure');
+
 
     $alreadyExp = $wpdb->get_results( "SELECT post_id FROM ".$wpdb->prefix."postmeta WHERE meta_key = 'mogambooo_export' and meta_value=1");
 
@@ -282,6 +289,10 @@ function grandcentralExportPostIds() {
         }
     }
     if(count($post_ids) > 0 ){
+
+        $option_meta_key        = 'remove_post_meta_'.$site_post_type;
+        update_option($option_meta_key, $remove_post_meta);
+
         foreach ($post_ids as $post_id) {
             grandcentral_post_data_ids_to_origin($post_id, $post_type, $permalink_structure);
             if(count($post_ids) > 1) sleep(2);
@@ -320,18 +331,19 @@ function grandcentral_post_data_ids_to_origin($posts,$post_type, $permalink_stru
 add_action('wp_ajax_grandcentral_export_posts', 'grandcentralExportPosts');
 function grandcentralExportPosts() {
 
-    $post_type  = (isset($_POST['post_type']) and $_POST['post_type'] !='') ? sanitize_text_field($_POST['post_type']) : '';
-    $site_post_type  = (isset($_POST['site_post_type']) and $_POST['site_post_type'] !='') ? sanitize_text_field($_POST['site_post_type']) : 'post';
+    $post_type          = (isset($_POST['post_type']) and $_POST['post_type'] !='') ? sanitize_text_field($_POST['post_type']) : '';
+    $site_post_type     = (isset($_POST['site_post_type']) and $_POST['site_post_type'] !='') ? sanitize_text_field($_POST['site_post_type']) : 'post';
     $permalink_structure = get_option('permalink_structure');
+
     $lastposts = grandcentral_remaining_export_posts($site_post_type);
-    
+
     while ($lastposts ) {
         set_time_limit(0);
         sendPostsToGrandCentral($lastposts, $post_type, $permalink_structure);
         sleep(3);
         $lastposts = grandcentral_remaining_export_posts($site_post_type);
     }
-    
+
     die('yes');
 }
 
@@ -385,7 +397,7 @@ function sendPostsToGrandCentral($lastposts, $post_type, $permalink_structure) {
 }
 function grandcentral_remaining_export_posts($site_post_type) {
     global $wpdb;
-    
+
     $alreadyExp = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."postmeta WHERE meta_key = 'mogambooo_export' and meta_value=1");
     $exclude = [];
     foreach($alreadyExp as $info){
@@ -470,30 +482,30 @@ function grandcentral_post_content($post) {
 
 
 function grandcentral_post_data_to_origin($posts,$post_type, $permalink_structure)
-{   
+{
     $ID           = get_option( '_grandcentral_export_ID' );
     $url          = get_option( '_grandcentral_export_website' );
 
     $response = wp_remote_post( $url.'/api/wordpress/posts', array(
-	'method' => 'POST',
-	'timeout' => 60,
-	'redirection' => 5,
-	'httpversion' => '1.0',
-	'blocking' => true,
-	'headers' => array(),
-	'body' => ['key' => $ID , 'data' => $posts,'type' => $post_type, 'permalink_structure' => $permalink_structure],
-	'cookies' => array()
+            'method' => 'POST',
+            'timeout' => 60,
+            'redirection' => 5,
+            'httpversion' => '1.0',
+            'blocking' => true,
+            'headers' => array(),
+            'body' => ['key' => $ID , 'data' => $posts,'type' => $post_type, 'permalink_structure' => $permalink_structure],
+            'cookies' => array()
         )
     );
 
     if ( is_wp_error( $response ) ) {
-       return false;
+        return false;
     } else {
         foreach($posts as $post) {
             update_post_meta($post['wp_id'], 'mogambooo_export', 1);
         }
-       return true;
-    }    
+        return true;
+    }
 }
 function grandcentral_total_exported() {
     global $wpdb;
@@ -518,6 +530,8 @@ function grandcentralSyncPosts() {
         if(is_array($post_ids) and count($post_ids) > 0 ) {
             $post = get_post($post_ids[0]);
             $wp_post_type = $post->post_type;
+            $option_meta_key        = 'remove_post_meta_'.$wp_post_type;
+            $remove_post_meta_value = get_option($option_meta_key, 0);
             $args = array(
                 'numberposts'   => count($post_ids),
                 'include'       => $post_ids,
@@ -527,6 +541,19 @@ function grandcentralSyncPosts() {
             $posts = get_posts( $args );
             $result = sendPostsToGrandCentral($posts, $post_type, $permalink_structure);
             if($result) {
+                if($remove_post_meta_value == 1) {
+                    $yoast_post_meta_keys = [
+                        '_yoast_wpseo_title',
+                        '_aioseop_title',
+                        '_yoast_wpseo_metadesc',
+                        '_aioseop_description',
+                    ];
+                    foreach ($post_ids AS $post_id) {
+                        foreach ($yoast_post_meta_keys as $yoast_post_meta_key) {
+                            delete_post_meta($post_id, $yoast_post_meta_key);
+                        }
+                    }
+                }
                 die('success');
             }
         }
